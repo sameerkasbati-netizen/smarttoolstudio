@@ -1,0 +1,2275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>DreamGoals Pro — SmartTools Studio</title>
+<style>
+/* ============================================================
+   THEME TOKENS
+   ============================================================ */
+:root{
+  --g900:#04241a; --g800:#0a3b2c; --g700:#0f523c; --g600:#177a52; --g500:#22a06b;
+  --gold:#c9a227; --gold-2:#e6c86a;
+  --bg:#f3f7f4; --card:#ffffff; --card-2:#fafcfb;
+  --text:#0c1f18; --muted:#5c7268; --border:#e3ebe5; --track:#e8efe9;
+  --danger:#c0392b; --danger-bg:#fdecea;
+  --shadow:0 1px 2px rgba(6,43,31,.05), 0 10px 26px rgba(6,43,31,.06);
+  --radius:16px;
+  --sidebar-bg:linear-gradient(180deg,#04241a,#0a3b2c);
+  --sidebar-text:#cfe6da;
+}
+[data-theme="dark"]{
+  --bg:#060f0c; --card:#0d1d17; --card-2:#102419;
+  --text:#e9f3ed; --muted:#8ea79b; --border:#1a2f27; --track:#1b3129;
+  --danger:#ef7a6d; --danger-bg:#2a1512;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 30px rgba(0,0,0,.4);
+  --sidebar-bg:linear-gradient(180deg,#04150f,#08251a);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--text); font-size:15px; line-height:1.45;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+body.modal-open{overflow:hidden}
+h1,h2,h3,h4{margin:0; font-weight:700; letter-spacing:-.01em}
+button,input,select,textarea{font-family:inherit; font-size:14px; color:inherit}
+a{color:var(--g600)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:99px}
+::-webkit-scrollbar-track{background:transparent}
+
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.pos{color:var(--g600)}
+.neg{color:var(--danger)}
+.gold{color:var(--gold)}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nowrap{white-space:nowrap}
+.hidden{display:none!important}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.app-shell{display:flex; min-height:100vh}
+.sidebar{
+  width:256px; flex:0 0 256px; background:var(--sidebar-bg); color:var(--sidebar-text);
+  position:sticky; top:0; height:100vh; display:flex; flex-direction:column;
+  padding:20px 14px; z-index:80;
+}
+.brand{display:flex; align-items:center; gap:11px; padding:4px 8px 20px}
+.brand .logo{
+  width:40px;height:40px;border-radius:12px; display:grid;place-items:center; font-size:20px;
+  background:linear-gradient(135deg,var(--gold),#8a6d1a); color:#1a1200; font-weight:800;
+  box-shadow:0 6px 16px rgba(201,162,39,.3);
+}
+.brand h1{font-size:16px; color:#fff; line-height:1.15}
+.brand span{font-size:11px; color:#8fb9a4; letter-spacing:.06em; text-transform:uppercase}
+
+.nav-list{display:flex; flex-direction:column; gap:3px; flex:1; overflow-y:auto}
+.nav-item{
+  display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:11px;
+  background:transparent; border:0; color:var(--sidebar-text); cursor:pointer;
+  font-size:14px; font-weight:500; text-align:left; width:100%; transition:.18s;
+}
+.nav-item:hover{background:rgba(255,255,255,.07); color:#fff}
+.nav-item.active{background:linear-gradient(90deg,rgba(201,162,39,.22),rgba(201,162,39,.05)); color:#fff; font-weight:600}
+.ni-ico{font-size:17px; width:22px; text-align:center}
+
+.sidebar-foot{padding:12px 8px 0; border-top:1px solid rgba(255,255,255,.09); margin-top:10px}
+.sidebar-foot .small{color:#7ba894; font-size:11px; line-height:1.5}
+
+.main-wrap{flex:1; min-width:0; display:flex; flex-direction:column}
+.topbar{
+  position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:12px;
+  padding:13px 22px; background:color-mix(in srgb,var(--bg) 88%, transparent);
+  backdrop-filter:blur(14px); border-bottom:1px solid var(--border);
+}
+.topbar h1{font-size:19px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.topbar-actions{display:flex; align-items:center; gap:9px}
+#main{padding:20px 22px 40px; flex:1; max-width:1500px; width:100%}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:9px 15px; border-radius:11px; border:1px solid transparent; cursor:pointer;
+  font-weight:600; font-size:13.5px; transition:.16s; white-space:nowrap; background:transparent;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--g600),var(--g700)); color:#fff; box-shadow:0 4px 12px rgba(15,82,60,.25)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-gold{background:linear-gradient(135deg,var(--gold-2),var(--gold)); color:#2a2003; box-shadow:0 4px 12px rgba(201,162,39,.28)}
+.btn-gold:hover{filter:brightness(1.05)}
+.btn-ghost{background:var(--card); border-color:var(--border); color:var(--text)}
+.btn-ghost:hover{border-color:var(--g500); color:var(--g600)}
+.btn-ghost.danger:hover{border-color:var(--danger); color:var(--danger)}
+.btn-sm{padding:6px 11px; font-size:12.5px; border-radius:9px}
+.btn-block{width:100%}
+.icon-btn{
+  width:38px;height:38px;border-radius:11px;border:1px solid var(--border); background:var(--card);
+  display:grid;place-items:center; cursor:pointer; font-size:16px; transition:.16s; color:var(--text);
+}
+.icon-btn:hover{border-color:var(--g500); color:var(--g600)}
+
+/* ============================================================
+   CARDS & GRIDS
+   ============================================================ */
+.card{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; box-shadow:var(--shadow);
+}
+.card-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px}
+.card-head h3{font-size:15.5px}
+.card-head .sub{font-size:12px; color:var(--muted); font-weight:400; margin-top:2px}
+
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(205px,1fr)); gap:14px; margin-bottom:18px}
+.stat{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.stat::after{
+  content:''; position:absolute; inset:0 auto 0 0; width:4px;
+  background:linear-gradient(180deg,var(--g500),var(--g700)); opacity:.9;
+}
+.stat.gold::after{background:linear-gradient(180deg,var(--gold-2),var(--gold))}
+.stat .s-label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600; display:flex; align-items:center; gap:6px}
+.stat .s-value{font-size:22px; font-weight:800; margin-top:8px; letter-spacing:-.02em; word-break:break-word}
+.stat .s-sub{font-size:12px; color:var(--muted); margin-top:4px}
+
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.section-gap{margin-bottom:18px}
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+.bar{height:9px; border-radius:99px; background:var(--track); overflow:hidden; position:relative}
+.bar>span{
+  display:block; height:100%; border-radius:99px; width:0;
+  background:linear-gradient(90deg,var(--g600),var(--g500));
+  transition:width .75s cubic-bezier(.4,0,.2,1);
+}
+.bar.gold>span{background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+.bar.sm{height:6px}
+.bar.lg{height:12px}
+
+/* ============================================================
+   WISHLIST CARDS
+   ============================================================ */
+.wish-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px}
+.wish-card{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; transition:.2s;
+}
+.wish-card:hover{transform:translateY(-3px); box-shadow:0 14px 34px rgba(6,43,31,.13)}
+.wish-media{height:140px; position:relative; background:linear-gradient(135deg,var(--g800),var(--g600)); display:grid; place-items:center}
+.wish-media img{width:100%; height:100%; object-fit:cover; display:block}
+.wish-media .ph{font-size:46px; opacity:.9; filter:drop-shadow(0 4px 10px rgba(0,0,0,.25))}
+.wish-media .chip{position:absolute; top:10px}
+.chip-priority{left:10px}
+.chip-status{right:10px}
+.wish-body{padding:15px; display:flex; flex-direction:column; gap:11px; flex:1}
+.wish-title{font-size:15.5px; font-weight:700; line-height:1.25}
+.wish-amounts{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px}
+.wish-amounts>div{display:flex; flex-direction:column; gap:1px}
+.wish-amounts strong{font-size:13.5px; font-weight:700}
+.wish-actions{display:flex; gap:7px; flex-wrap:wrap; margin-top:auto}
+.wish-actions .btn{flex:1; min-width:0; padding:8px 10px}
+
+/* ============================================================
+   CHIPS
+   ============================================================ */
+.chip{
+  display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:99px;
+  font-size:11px; font-weight:700; letter-spacing:.02em; white-space:nowrap;
+  background:rgba(255,255,255,.92); color:#0c1f18; backdrop-filter:blur(4px);
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+}
+.chip.p-High{background:#c0392b; color:#fff}
+.chip.p-Medium{background:#c9a227; color:#2a2003}
+.chip.p-Low{background:#4a6b5c; color:#fff}
+.chip.s-Achieved{background:#177a52; color:#fff}
+.chip.s-InProgress{background:#c9a227; color:#2a2003}
+.chip.s-NotStarted{background:rgba(255,255,255,.9); color:#0c1f18}
+.tag{
+  display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:99px;
+  font-size:11px; font-weight:600; background:var(--track); color:var(--muted);
+}
+.tag.green{background:rgba(34,160,107,.14); color:var(--g600)}
+.tag.gold{background:rgba(201,162,39,.16); color:#a8861f}
+.tag.red{background:var(--danger-bg); color:var(--danger)}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.form-grid .full{grid-column:1/-1}
+.field{display:flex; flex-direction:column; gap:6px}
+.field label{font-size:12.5px; font-weight:600; color:var(--muted)}
+.field .hint{font-size:11.5px; color:var(--muted)}
+input,select,textarea{
+  width:100%; padding:10px 12px; border-radius:11px; border:1px solid var(--border);
+  background:var(--card-2); color:var(--text); outline:none; transition:.16s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--g500); box-shadow:0 0 0 3px rgba(34,160,107,.14)}
+textarea{resize:vertical; min-height:78px}
+input[type=file]{padding:7px; font-size:12.5px}
+.form-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:6px}
+.img-preview{
+  width:100%; height:130px; border-radius:12px; border:1px dashed var(--border);
+  display:grid; place-items:center; overflow:hidden; background:var(--card-2); color:var(--muted); font-size:12.5px;
+}
+.img-preview img{width:100%;height:100%;object-fit:cover}
+.filter-bar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px}
+.filter-bar .field{min-width:150px; flex:1 1 150px}
+
+/* ============================================================
+   TABLES / LISTS
+   ============================================================ */
+.tx-list{display:flex; flex-direction:column}
+.tx-row{
+  display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--border);
+}
+.tx-row:last-child{border-bottom:0}
+.tx-ico{
+  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:16px;flex:0 0 38px;
+  background:var(--track);
+}
+.tx-ico.in{background:rgba(34,160,107,.15)}
+.tx-ico.out{background:var(--danger-bg)}
+.tx-main{flex:1; min-width:0}
+.tx-main .t1{font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.tx-main .t2{font-size:12px; color:var(--muted)}
+.tx-amt{font-weight:800; font-size:14.5px; white-space:nowrap}
+
+.table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px}
+th{
+  text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--border); white-space:nowrap;
+}
+td{padding:11px 10px; border-bottom:1px solid var(--border); vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--card-2)}
+
+/* ============================================================
+   PROGRESS ROWS (dashboard)
+   ============================================================ */
+.goal-row{padding:13px 0; border-bottom:1px solid var(--border)}
+.goal-row:last-child{border-bottom:0}
+.goal-row .top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px}
+.goal-row .name{font-weight:650; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.empty{
+  text-align:center; padding:52px 22px; color:var(--muted);
+  border:1.5px dashed var(--border); border-radius:var(--radius); background:var(--card);
+}
+.empty .em{font-size:46px; margin-bottom:12px}
+.empty h3{color:var(--text); margin-bottom:6px; font-size:17px}
+.empty p{margin:0 0 16px; font-size:13.5px; max-width:460px; margin-inline:auto}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(4,20,14,.55); backdrop-filter:blur(5px);
+  z-index:200; display:flex; align-items:flex-start; justify-content:center; padding:24px 16px; overflow-y:auto;
+  animation:fadeIn .18s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--card); border:1px solid var(--border); border-radius:20px; width:100%; max-width:640px;
+  padding:22px; box-shadow:0 24px 70px rgba(0,0,0,.35); animation:pop .22s cubic-bezier(.2,.9,.3,1.2);
+  margin:auto;
+}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; gap:12px}
+.modal-head h2{font-size:18px}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+#toastRoot{position:fixed; bottom:96px; left:50%; transform:translateX(-50%); z-index:400; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; width:max-content; max-width:92vw}
+.toast{
+  background:var(--g800); color:#fff; padding:11px 18px; border-radius:12px; font-size:13.5px;
+  font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,.3); animation:toastIn .25s ease; display:flex; gap:8px; align-items:center;
+  max-width:92vw;
+}
+.toast.err{background:#8e2c20}
+.toast.gold{background:linear-gradient(135deg,var(--gold),#a8861f); color:#2a2003}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+.chart-box{position:relative; width:100%; height:250px}
+.chart-box canvas{width:100%; height:100%; display:block}
+.legend{display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:12px}
+.legend .li{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--muted)}
+.legend .dot{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+
+/* ============================================================
+   BOTTOM NAV
+   ============================================================ */
+.bottomnav{
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:120;
+  background:color-mix(in srgb,var(--card) 94%, transparent); backdrop-filter:blur(16px);
+  border-top:1px solid var(--border); padding:7px 6px calc(7px + env(safe-area-inset-bottom));
+  justify-content:space-around; align-items:center;
+}
+.bn-item{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px;
+  background:none; border:0; cursor:pointer; color:var(--muted); font-size:10px; font-weight:600;
+  border-radius:12px; transition:.16s;
+}
+.bn-item .ic{font-size:19px; line-height:1}
+.bn-item.active{color:var(--g600)}
+.bn-add{
+  flex:0 0 54px; height:54px; border-radius:18px; margin-top:-20px;
+  background:linear-gradient(135deg,var(--gold-2),var(--gold)); color:#2a2003; border:0;
+  display:grid; place-items:center; font-size:26px; font-weight:700; cursor:pointer;
+  box-shadow:0 8px 22px rgba(201,162,39,.4);
+}
+.scrim{display:none}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1100px){
+  .grid-3{grid-template-columns:1fr 1fr}
+}
+@media (max-width:980px){
+  .sidebar{position:fixed; left:0; top:0; bottom:0; transform:translateX(-102%); transition:transform .28s cubic-bezier(.4,0,.2,1); box-shadow:0 0 60px rgba(0,0,0,.4)}
+  .sidebar.open{transform:none}
+  .main-wrap{width:100%}
+  #main{padding:14px 14px 110px}
+  .topbar{padding:11px 14px}
+  .topbar h1{font-size:17px}
+  .bottomnav{display:flex}
+  .only-mobile{display:grid!important}
+  .scrim{display:block; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:70; opacity:0; pointer-events:none; transition:.25s}
+  .scrim.show{opacity:1; pointer-events:auto}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .wish-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .stat-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px}
+  .stat{padding:13px}
+  .stat .s-value{font-size:18px}
+  .stat .s-label{font-size:10.5px}
+  .card{padding:15px; border-radius:14px}
+  #toastRoot{bottom:110px}
+}
+@media (min-width:981px){
+  .only-mobile{display:none!important}
+}
+@media (max-width:520px){
+  .wish-grid{grid-template-columns:1fr}
+  .wish-amounts{grid-template-columns:1fr 1fr}
+  .wish-amounts>div:nth-child(3){grid-column:1/-1}
+  .modal{padding:17px; border-radius:16px}
+  .modal-backdrop{padding:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">★</div>
+      <div>
+        <h1>DreamGoals Pro</h1>
+        <span>Goal &amp; Savings Tracker</span>
+      </div>
+    </div>
+    <nav class="nav-list" id="navList">
+      <button class="nav-item active" data-view="dashboard"><span class="ni-ico">🏠</span> Dashboard</button>
+      <button class="nav-item" data-view="wishlist"><span class="ni-ico">🎯</span> My Wishlist</button>
+      <button class="nav-item" data-view="savings"><span class="ni-ico">💰</span> Savings Tracker</button>
+      <button class="nav-item" data-view="planner"><span class="ni-ico">🧠</span> Smart Planner</button>
+      <button class="nav-item" data-view="reports"><span class="ni-ico">📊</span> Reports</button>
+      <button class="nav-item" data-view="settings"><span class="ni-ico">⚙️</span> Settings &amp; Data</button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="small">
+        DreamGoals Pro by SmartTools Studio. Your data stays in this browser; export backups regularly from Settings.
+      </div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- ================= MAIN ================= -->
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="menuBtn" aria-label="Menu">☰</button>
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+        <button class="btn btn-gold" data-action="add-item">＋ <span class="only-desktop-text">New Wish</span></button>
+      </div>
+    </header>
+    <main id="main"></main>
+  </div>
+</div>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav class="bottomnav" id="bottomNav">
+  <button class="bn-item active" data-view="dashboard"><span class="ic">🏠</span>Home</button>
+  <button class="bn-item" data-view="wishlist"><span class="ic">🎯</span>Wishlist</button>
+  <button class="bn-add" data-action="add-item" aria-label="Add wish">＋</button>
+  <button class="bn-item" data-view="savings"><span class="ic">💰</span>Savings</button>
+  <button class="bn-item" data-view="reports"><span class="ic">📊</span>Reports</button>
+</nav>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<script>
+/* ============================================================
+   DREAMGOALS PRO — SmartTools Studio
+   ============================================================ */
+(function(){
+'use strict';
+
+/* ---------------- Constants ---------------- */
+const K = { items:'mdw_items_v1', txns:'mdw_txns_v1', settings:'mdw_settings_v1' };
+const DAY = 86400000;
+const CATEGORIES = [
+  {name:'Mobile',  emoji:'📱'},
+  {name:'Laptop',  emoji:'💻'},
+  {name:'Bike',    emoji:'🏍️'},
+  {name:'Car',     emoji:'🚗'},
+  {name:'Fashion', emoji:'👗'},
+  {name:'Travel',  emoji:'✈️'},
+  {name:'Education',emoji:'🎓'},
+  {name:'Business',emoji:'💼'},
+  {name:'Family',  emoji:'👨‍👩‍👧'},
+  {name:'Other',   emoji:'⭐'}
+];
+const PRIORITIES = ['High','Medium','Low'];
+const STATUSES = ['Not Started','In Progress','Achieved'];
+const PALETTE = ['#177a52','#c9a227','#22a06b','#0a3b2c','#e6c86a','#4fb98a','#8a6d1a','#7fcfae','#a8861f','#0f523c'];
+const TITLES = {
+  dashboard:'Dashboard', wishlist:'My Wishlist', savings:'Savings Tracker',
+  planner:'Smart Goal Planner', reports:'Reports & Analytics', settings:'Settings & Data'
+};
+
+/* ---------------- Utilities ---------------- */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const uid = ()=> Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const num = v => { const n = Number(v); return isFinite(n) ? n : 0; };
+const sum = a => a.reduce((x,y)=>x+y,0);
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+function todayISO(){
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+}
+function startOfToday(){
+  const d = new Date(); d.setHours(0,0,0,0); return d;
+}
+function parseD(s){
+  if(!s) return null;
+  const d = new Date(s + 'T00:00:00');
+  return isNaN(d.getTime()) ? null : d;
+}
+function addDays(d,n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+
+const NF = new Intl.NumberFormat('en-PK',{maximumFractionDigits:0});
+function fmtMoney(n){
+  n = Math.round(num(n));
+  const sign = n < 0 ? '-' : '';
+  return sign + 'Rs ' + NF.format(Math.abs(n));
+}
+function fmtShort(n){
+  n = num(n);
+  const a = Math.abs(n), s = n<0?'-':'';
+  if(a >= 10000000) return s+'Rs '+(a/10000000).toFixed(2)+' Cr';
+  if(a >= 100000)   return s+'Rs '+(a/100000).toFixed(2)+' Lac';
+  if(a >= 1000)     return s+'Rs '+(a/1000).toFixed(1)+'k';
+  return s+'Rs '+Math.round(a);
+}
+function fmtDate(d){
+  if(!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function fmtDay(d){
+  return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+}
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function catEmoji(cat){
+  const f = CATEGORIES.find(c=>c.name===cat);
+  return f ? f.emoji : '⭐';
+}
+function hexA(hex,a){
+  const c = hex.replace('#','');
+  const full = c.length===3 ? c.split('').map(x=>x+x).join('') : c;
+  const n = parseInt(full,16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+function niceMax(v){
+  if(v <= 0) return 1;
+  const exp = Math.floor(Math.log10(v));
+  const base = Math.pow(10,exp);
+  const n = v/base;
+  let m;
+  if(n<=1) m=1; else if(n<=2) m=2; else if(n<=2.5) m=2.5; else if(n<=5) m=5; else m=10;
+  return m*base;
+}
+
+/* ---------------- State ---------------- */
+let state = {
+  items: [],
+  txns: [],
+  settings: { theme:'light', monthlyBudget:0, userName:'' }
+};
+let currentView = 'dashboard';
+let reportRange = { type:'90d', from:null, to:null };
+let plannerBudget = null;
+let chartRedraws = [];
+
+/* ---------------- Persistence ---------------- */
+function load(){
+  try{ const i = JSON.parse(localStorage.getItem(K.items)); if(Array.isArray(i)) state.items = i; }catch(e){}
+  try{ const t = JSON.parse(localStorage.getItem(K.txns));  if(Array.isArray(t)) state.txns  = t; }catch(e){}
+  try{ const s = JSON.parse(localStorage.getItem(K.settings)); if(s && typeof s === 'object') state.settings = Object.assign(state.settings, s); }catch(e){}
+  state.items = state.items.map(it => ({
+    id: it.id || uid(),
+    name: it.name || 'Untitled',
+    category: CATEGORIES.some(c=>c.name===it.category) ? it.category : 'Other',
+    image: it.image || '',
+    price: num(it.price),
+    priority: PRIORITIES.includes(it.priority) ? it.priority : 'Medium',
+    targetDate: it.targetDate || '',
+    monthlySaving: num(it.monthlySaving),
+    notes: it.notes || '',
+    status: STATUSES.includes(it.status) ? it.status : 'Not Started',
+    createdAt: it.createdAt || new Date().toISOString()
+  }));
+  state.txns = state.txns.map(t => ({
+    id: t.id || uid(),
+    itemId: t.itemId,
+    type: t.type === 'withdrawal' ? 'withdrawal' : 'deposit',
+    amount: Math.abs(num(t.amount)),
+    date: t.date || todayISO(),
+    note: t.note || '',
+    createdAt: t.createdAt || new Date().toISOString()
+  })).filter(t => state.items.some(i => i.id === t.itemId));
+  state.txns.sort((a,b)=> (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+function saveItems(){ localStorage.setItem(K.items, JSON.stringify(state.items)); }
+function saveTxns(){ localStorage.setItem(K.txns, JSON.stringify(state.txns)); }
+function saveSettings(){ localStorage.setItem(K.settings, JSON.stringify(state.settings)); }
+
+/* ---------------- Derived data ---------------- */
+function getItem(id){ return state.items.find(i=>i.id===id) || null; }
+
+function savedFor(itemId){
+  let bal = 0;
+  for(const t of state.txns){
+    if(t.itemId !== itemId) continue;
+    bal += (t.type === 'withdrawal' ? -1 : 1) * num(t.amount);
+  }
+  return Math.max(0, bal);
+}
+function txnsFor(itemId){
+  return state.txns.filter(t=>t.itemId===itemId).sort((a,b)=> a.date<b.date?1:a.date>b.date?-1:0);
+}
+function avgMonthly(itemId){
+  const list = txnsFor(itemId);
+  if(!list.length) return 0;
+  const from = Math.min(...list.map(t=> new Date(t.date).getTime()));
+  const spanDays = Math.max(30, (Date.now() - from)/DAY);
+  const net = list.reduce((a,t)=> a + (t.type==='withdrawal'?-1:1)*num(t.amount), 0);
+  if(net <= 0) return 0;
+  return net / (spanDays/30.4375);
+}
+
+function itemStats(it){
+  const price = num(it.price);
+  const saved = savedFor(it.id);
+  const remaining = Math.max(0, price - saved);
+  const pct = price > 0 ? clamp((saved/price)*100, 0, 100) : 0;
+  const planned = num(it.monthlySaving);
+  const actual = avgMonthly(it.id);
+  const rate = planned > 0 ? planned : actual;
+
+  let monthsLeft;
+  if(remaining <= 0) monthsLeft = 0;
+  else if(rate > 0) monthsLeft = remaining / rate;
+  else monthsLeft = Infinity;
+
+  const eta = remaining <= 0 ? new Date() :
+              (isFinite(monthsLeft) ? addDays(new Date(), monthsLeft*30.4375) : null);
+
+  const target = parseD(it.targetDate);
+  const daysToTarget = target ? Math.ceil((target - startOfToday())/DAY) : null;
+
+  let reqDaily = null, reqWeekly = null, reqMonthly = null;
+  if(daysToTarget !== null && daysToTarget > 0 && remaining > 0){
+    reqDaily = remaining / daysToTarget;
+    reqWeekly = reqDaily * 7;
+    reqMonthly = reqDaily * 30.4375;
+  }
+  const onTrack = (eta && target) ? (eta.getTime() <= target.getTime()) : null;
+
+  return { price, saved, remaining, pct, planned, actual, rate, monthsLeft, eta, target,
+           daysToTarget, reqDaily, reqWeekly, reqMonthly, onTrack };
+}
+
+function monthlyTarget(){
+  const planned = sum(state.items.map(i=>num(i.monthlySaving)));
+  return planned > 0 ? planned : num(state.settings.monthlyBudget);
+}
+function overallStats(){
+  const totalBudget = sum(state.items.map(i=>num(i.price)));
+  const totalSaved = sum(state.items.map(i=>savedFor(i.id)));
+  const remaining = Math.max(0, totalBudget - totalSaved);
+  const pct = totalBudget > 0 ? clamp((totalSaved/totalBudget)*100,0,100) : 0;
+  const monthly = monthlyTarget();
+  const achieved = state.items.filter(i=>i.status==='Achieved').length;
+  const pending = state.items.length - achieved;
+  let etaAll = null, monthsAll = Infinity;
+  if(remaining <= 0) { monthsAll = 0; etaAll = new Date(); }
+  else if(monthly > 0){ monthsAll = remaining/monthly; etaAll = addDays(new Date(), monthsAll*30.4375); }
+  return { totalBudget, totalSaved, remaining, pct, monthly, achieved, pending, etaAll, monthsAll,
+           totalItems: state.items.length };
+}
+function prioRank(p){ return p==='High'?0 : p==='Medium'?1 : 2; }
+function statusClass(s){ return s==='Achieved'?'s-Achieved' : s==='In Progress'?'s-InProgress':'s-NotStarted'; }
+
+/* ---------------- Toast ---------------- */
+function toast(msg, kind){
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind ? ' '+kind : '');
+  el.innerHTML = (kind==='err'?'⚠️ ':kind==='gold'?'🏆 ':'✅ ') + esc(msg);
+  $('#toastRoot').appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s, transform .3s'; el.style.opacity='0'; el.style.transform='translateY(8px)'; }, 2400);
+  setTimeout(()=> el.remove(), 2800);
+}
+
+/* ============================================================
+   TRANSACTIONS
+   ============================================================ */
+function addTxn({itemId, type, amount, date, note}){
+  amount = num(amount);
+  if(amount <= 0) return { ok:false, msg:'Amount must be greater than zero.' };
+  const item = getItem(itemId);
+  if(!item) return { ok:false, msg:'Please select a wishlist item.' };
+  date = date || todayISO();
+  if(!parseD(date)) return { ok:false, msg:'Please enter a valid date.' };
+  if(parseD(date) > addDays(startOfToday(), 1)) return { ok:false, msg:'Date cannot be in the future.' };
+
+  const cur = savedFor(itemId);
+  if(type === 'withdrawal' && amount > cur + 0.001){
+    return { ok:false, msg:`Withdrawal exceeds the saved balance (${fmtMoney(cur)}).` };
+  }
+
+  const dup = state.txns.find(t =>
+    t.itemId===itemId && t.type===type && num(t.amount)===amount &&
+    t.date===date && (t.note||'') === (note||'')
+  );
+  if(dup){
+    const go = confirm('An identical transaction already exists for this item.\n\nAdd it again anyway?');
+    if(!go) return { ok:false, msg:'Duplicate transaction cancelled.' };
+  }
+
+  const txn = { id: uid(), itemId, type, amount, date, note: note||'', createdAt:new Date().toISOString() };
+  state.txns.push(txn);
+  state.txns.sort((a,b)=> a.date<b.date?1:a.date>b.date?-1:0);
+  saveTxns();
+
+  const wasAchieved = item.status === 'Achieved';
+  recomputeStatus(item);
+  saveItems();
+
+  if(!wasAchieved && item.status === 'Achieved'){
+    return { ok:true, msg:`🎉 Congratulations! "${item.name}" is fully funded!`, achieved:true };
+  }
+  return { ok:true, msg: type==='withdrawal' ? 'Withdrawal recorded.' : 'Savings added successfully.' };
+}
+
+function recomputeStatus(item){
+  const price = num(item.price);
+  const saved = savedFor(item.id);
+  if(price > 0 && saved >= price - 0.001) item.status = 'Achieved';
+  else if(saved > 0 && item.status !== 'Achieved') item.status = 'In Progress';
+  else if(saved <= 0.001 && item.status === 'In Progress') item.status = 'Not Started';
+}
+
+/* ============================================================
+   CHARTS (canvas, dependency-free)
+   ============================================================ */
+function setupCanvas(cv){
+  const dpr = window.devicePixelRatio || 1;
+  const rect = cv.getBoundingClientRect();
+  const w = Math.max(rect.width, 10);
+  const h = Math.max(rect.height, 10);
+  cv.width = Math.round(w*dpr);
+  cv.height = Math.round(h*dpr);
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  return { ctx, w, h };
+}
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function emptyChart(ctx,w,h,msg){
+  ctx.fillStyle = cssVar('--muted');
+  ctx.font = '13px -apple-system, system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(msg || 'No data yet', w/2, h/2);
+}
+
+function chartLine(cv, points, color){
+  const { ctx, w, h } = setupCanvas(cv);
+  const pad = { l:64, r:16, t:16, b:30 };
+  const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+  if(points.length < 2 || cw <= 10){ emptyChart(ctx,w,h,'Not enough data yet'); return; }
+  const muted = cssVar('--muted'), border = cssVar('--border');
+  const maxV = niceMax(Math.max(...points.map(p=>p.v), 1));
+
+  ctx.font = '11px -apple-system, system-ui, sans-serif';
+  ctx.strokeStyle = border; ctx.lineWidth = 1;
+  ctx.fillStyle = muted; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let i=0;i<=4;i++){
+    const y = pad.t + ch - (ch*i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+cw, y); ctx.stroke();
+    ctx.fillText(fmtShort(maxV*i/4), pad.l-8, y);
+  }
+  const X = i => pad.l + (cw * i / (points.length-1));
+  const Y = v => pad.t + ch - (ch * (v/maxV));
+
+  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t+ch);
+  grad.addColorStop(0, hexA(color, .30));
+  grad.addColorStop(1, hexA(color, 0));
+  ctx.beginPath();
+  ctx.moveTo(X(0), Y(points[0].v));
+  points.forEach((p,i)=> ctx.lineTo(X(i), Y(p.v)));
+  ctx.lineTo(X(points.length-1), pad.t+ch);
+  ctx.lineTo(X(0), pad.t+ch);
+  ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  ctx.beginPath();
+  points.forEach((p,i)=> i ? ctx.lineTo(X(i),Y(p.v)) : ctx.moveTo(X(i),Y(p.v)));
+  ctx.strokeStyle = color; ctx.lineWidth = 2.4; ctx.lineJoin='round'; ctx.lineCap='round';
+  ctx.stroke();
+
+  const last = points.length-1;
+  ctx.beginPath(); ctx.arc(X(last), Y(points[last].v), 4.5, 0, Math.PI*2);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.strokeStyle = cssVar('--card'); ctx.lineWidth = 2; ctx.stroke();
+
+  const step = Math.max(1, Math.ceil(points.length/6));
+  ctx.fillStyle = muted; ctx.textAlign='center'; ctx.textBaseline='top';
+  points.forEach((p,i)=>{
+    if(i % step === 0 || i === points.length-1) ctx.fillText(p.l, X(i), pad.t+ch+8);
+  });
+}
+
+function chartBars(cv, groups, opts){
+  opts = opts || {};
+  const { ctx, w, h } = setupCanvas(cv);
+  const pad = { l:64, r:16, t:16, b:34 };
+  const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+  if(!groups.length || cw <= 10){ emptyChart(ctx,w,h,'No data yet'); return; }
+  const muted = cssVar('--muted'), border = cssVar('--border');
+
+  let maxVal = 0;
+  groups.forEach(g => g.values.forEach(v => { if(v.v > maxVal) maxVal = v.v; }));
+  const maxV = niceMax(maxVal || 1);
+
+  ctx.font = '11px -apple-system, system-ui, sans-serif';
+  ctx.strokeStyle = border; ctx.lineWidth = 1;
+  ctx.fillStyle = muted; ctx.textAlign='right'; ctx.textBaseline='middle';
+  for(let i=0;i<=4;i++){
+    const y = pad.t + ch - (ch*i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+    ctx.fillText(fmtShort(maxV*i/4), pad.l-8, y);
+  }
+
+  const slot = cw / groups.length;
+  const multi = groups[0].values.length;
+  const gap = Math.min(10, slot*0.22);
+  const barW = Math.max(3, Math.min(opts.maxBar || 30, (slot - gap) / multi - 3));
+
+  groups.forEach((g, gi) => {
+    const groupW = barW*multi + 3*(multi-1);
+    const startX = pad.l + slot*gi + (slot - groupW)/2;
+    g.values.forEach((v, vi) => {
+      const bh = (v.v / maxV) * ch;
+      const x = startX + vi*(barW+3);
+      const y = pad.t + ch - bh;
+      ctx.fillStyle = v.color;
+      const r = Math.min(5, barW/2);
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(x, y, barW, Math.max(bh,1), [r,r,0,0]);
+      else ctx.rect(x, y, barW, Math.max(bh,1));
+      ctx.fill();
+    });
+  });
+
+  ctx.fillStyle = muted; ctx.textAlign='center'; ctx.textBaseline='top';
+  const step = Math.max(1, Math.ceil(groups.length/8));
+  groups.forEach((g,i)=>{
+    if(i % step === 0 || i === groups.length-1){
+      const x = pad.l + slot*i + slot/2;
+      ctx.fillText(g.label, x, pad.t+ch+9);
+    }
+  });
+}
+
+function chartDoughnut(cv, slices, centerLabel){
+  const { ctx, w, h } = setupCanvas(cv);
+  const cx = w/2, cy = h/2;
+  const R = Math.min(w,h)/2 - 6;
+  const r = R * 0.63;
+  const total = slices.reduce((a,s)=> a + s.v, 0);
+  if(total <= 0 || R <= 10){ emptyChart(ctx,w,h,'No data yet'); return; }
+  let a0 = -Math.PI/2;
+  slices.forEach(s=>{
+    if(s.v <= 0) return;
+    const a1 = a0 + (s.v/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx, cy, R, a0, a1);
+    ctx.closePath();
+    ctx.fillStyle = s.color;
+    ctx.fill();
+    ctx.strokeStyle = cssVar('--card');
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    a0 = a1;
+  });
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+  ctx.globalCompositeOperation = 'source-over';
+
+  ctx.fillStyle = cssVar('--text');
+  ctx.font = '700 17px -apple-system, system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(fmtShort(total), cx, cy - 4);
+  ctx.fillStyle = cssVar('--muted');
+  ctx.font = '11px -apple-system, system-ui, sans-serif';
+  ctx.fillText(centerLabel || 'total saved', cx, cy + 14);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+function openModal(html){
+  $('#modalRoot').innerHTML = '<div class="modal-backdrop" data-close="1"><div class="modal">'+html+'</div></div>';
+  document.body.classList.add('modal-open');
+}
+function closeModal(){
+  $('#modalRoot').innerHTML = '';
+  document.body.classList.remove('modal-open');
+}
+
+/* ---------------- Item Modal ---------------- */
+let tempImage = '';
+
+function openItemModal(id){
+  const it = id ? getItem(id) : null;
+  tempImage = it ? (it.image || '') : '';
+  const cats = CATEGORIES.map(c=>`<option value="${c.name}" ${it&&it.category===c.name?'selected':''}>${c.emoji} ${c.name}</option>`).join('');
+  const prios = PRIORITIES.map(p=>`<option value="${p}" ${it&&it.priority===p?'selected':''}>${p}</option>`).join('');
+  const stats = it ? itemStats(it) : null;
+
+  openModal(`
+    <div class="modal-head">
+      <h2>${it ? 'Edit Wishlist Item' : 'Add New Wishlist Item'}</h2>
+      <button class="icon-btn" data-action="close-modal" aria-label="Close">✕</button>
+    </div>
+    <form id="itemForm">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Wishlist Item Name *</label>
+          <input type="text" id="f_name" required maxlength="80" placeholder="e.g. iPhone 16 Pro" value="${it?esc(it.name):''}">
+        </div>
+
+        <div class="field">
+          <label>Category</label>
+          <select id="f_category">${cats}</select>
+        </div>
+
+        <div class="field">
+          <label>Priority</label>
+          <select id="f_priority">${prios}</select>
+        </div>
+
+        <div class="field full">
+          <label>Product Image</label>
+          <div class="img-preview" id="imgPrev">${tempImage ? `<img src="${esc(tempImage)}" alt="">` : 'No image selected'}</div>
+          <input type="file" id="f_imgFile" accept="image/*">
+          <input type="text" id="f_imgUrl" placeholder="…or paste an image URL" value="${it && it.image && !it.image.startsWith('data:') ? esc(it.image) : ''}" style="margin-top:6px">
+        </div>
+
+        <div class="field">
+          <label>Estimated Price (PKR) *</label>
+          <input type="number" id="f_price" min="0" step="1" required placeholder="0" value="${it?num(it.price):''}">
+        </div>
+
+        ${ it ? `
+        <div class="field">
+          <label>Currently Saved</label>
+          <input type="text" value="${fmtMoney(stats.saved)}" disabled>
+          <span class="hint">Use “＋ Save” on the card to add or withdraw money.</span>
+        </div>` : `
+        <div class="field">
+          <label>Current Saved Amount (PKR)</label>
+          <input type="number" id="f_saved" min="0" step="1" placeholder="0" value="">
+          <span class="hint">Already saved something? It will be recorded as an opening balance.</span>
+        </div>` }
+
+        <div class="field">
+          <label>Target Purchase Date</label>
+          <input type="date" id="f_targetDate" value="${it?it.targetDate:''}">
+        </div>
+
+        <div class="field">
+          <label>Monthly Saving Amount (PKR)</label>
+          <input type="number" id="f_monthly" min="0" step="1" placeholder="0" value="${it?num(it.monthlySaving)||'':''}">
+          <span class="hint">How much you plan to save each month for this goal.</span>
+        </div>
+
+        <div class="field full">
+          <label>Goal Status</label>
+          <select id="f_status">${STATUSES.map(s=>`<option value="${s}" ${it&&it.status===s?'selected':''}>${s}</option>`).join('')}</select>
+        </div>
+
+        <div class="field full">
+          <label>Notes &amp; Description</label>
+          <textarea id="f_notes" maxlength="500" placeholder="Why do you want this? Any details, model, colour, shop…">${it?esc(it.notes):''}</textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">${it ? 'Save Changes' : 'Add to Wishlist'}</button>
+      </div>
+    </form>
+  `);
+
+  const prev = $('#imgPrev');
+  $('#f_imgFile').addEventListener('change', e=>{
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 520;
+        let iw = img.width, ih = img.height;
+        const scale = Math.min(1, MAX / Math.max(iw, ih));
+        const c = document.createElement('canvas');
+        c.width = Math.round(iw*scale); c.height = Math.round(ih*scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        tempImage = c.toDataURL('image/jpeg', 0.78);
+        prev.innerHTML = `<img src="${tempImage}" alt="">`;
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  $('#f_imgUrl').addEventListener('input', e=>{
+    const v = e.target.value.trim();
+    if(v){ tempImage = v; prev.innerHTML = `<img src="${esc(v)}" alt="">`; }
+  });
+
+  $('#itemForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    saveItemFromForm(it ? it.id : null);
+  });
+}
+
+function saveItemFromForm(id){
+  const name = $('#f_name').value.trim();
+  const price = num($('#f_price').value);
+  if(!name){ toast('Please enter a name.','err'); return; }
+  if(price <= 0){ toast('Please enter a valid estimated price.','err'); return; }
+
+  const data = {
+    name,
+    category: $('#f_category').value,
+    image: tempImage || '',
+    price,
+    priority: $('#f_priority').value,
+    targetDate: $('#f_targetDate').value || '',
+    monthlySaving: num($('#f_monthly').value),
+    notes: $('#f_notes').value.trim(),
+    status: $('#f_status').value
+  };
+
+  if(id){
+    const it = getItem(id);
+    if(!it) return;
+    Object.assign(it, data);
+    recomputeStatus(it);
+    saveItems();
+    closeModal();
+    toast('Wishlist item updated.');
+    render();
+  } else {
+    const it = Object.assign({ id: uid(), createdAt: new Date().toISOString() }, data);
+    state.items.push(it);
+    saveItems();
+
+    const opening = num($('#f_saved') ? $('#f_saved').value : 0);
+    if(opening > 0){
+      state.txns.push({
+        id: uid(), itemId: it.id, type: 'deposit', amount: opening,
+        date: todayISO(), note: 'Opening balance', createdAt: new Date().toISOString()
+      });
+      state.txns.sort((a,b)=> a.date<b.date?1:a.date>b.date?-1:0);
+      saveTxns();
+      recomputeStatus(it);
+      saveItems();
+    }
+    closeModal();
+    toast('Added to your wishlist!');
+    render();
+  }
+}
+
+/* ---------------- Savings Modal ---------------- */
+function openSavingsModal(itemId, presetType){
+  if(!state.items.length){ toast('Add a wishlist item first.','err'); return; }
+  const sel = itemId || state.items[0].id;
+  const options = state.items.map(i =>
+    `<option value="${i.id}" ${i.id===sel?'selected':''}>${catEmoji(i.category)} ${esc(i.name)} — saved ${fmtMoney(savedFor(i.id))}</option>`
+  ).join('');
+
+  openModal(`
+    <div class="modal-head">
+      <h2>Record a Saving</h2>
+      <button class="icon-btn" data-action="close-modal" aria-label="Close">✕</button>
+    </div>
+    <form id="txnForm">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Wishlist Item *</label>
+          <select id="t_item">${options}</select>
+        </div>
+        <div class="field full">
+          <label>Transaction Type</label>
+          <select id="t_type">
+            <option value="deposit" ${presetType!=='withdrawal'?'selected':''}>➕ Deposit — add savings / bonus</option>
+            <option value="withdrawal" ${presetType==='withdrawal'?'selected':''}>➖ Withdrawal — spend against this goal</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Amount (PKR) *</label>
+          <input type="number" id="t_amount" min="1" step="1" required placeholder="0">
+        </div>
+        <div class="field">
+          <label>Date *</label>
+          <input type="date" id="t_date" value="${todayISO()}" max="${todayISO()}">
+        </div>
+        <div class="field full">
+          <label>Note (optional)</label>
+          <input type="text" id="t_note" maxlength="120" placeholder="e.g. Salary saving, Eid bonus, freelance income">
+        </div>
+        <div class="field full">
+          <div class="hint" id="t_balance"></div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Transaction</button>
+      </div>
+    </form>
+  `);
+
+  const refreshBalance = ()=>{
+    const it = getItem($('#t_item').value);
+    if(!it) return;
+    const s = itemStats(it);
+    $('#t_balance').innerHTML =
+      `Current balance: <strong>${fmtMoney(s.saved)}</strong> &nbsp;•&nbsp; Remaining: <strong>${fmtMoney(s.remaining)}</strong> &nbsp;•&nbsp; Progress: <strong>${s.pct.toFixed(1)}%</strong>`;
+  };
+  $('#t_item').addEventListener('change', refreshBalance);
+  refreshBalance();
+
+  $('#txnForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const res = addTxn({
+      itemId: $('#t_item').value,
+      type: $('#t_type').value,
+      amount: $('#t_amount').value,
+      date: $('#t_date').value,
+      note: $('#t_note').value.trim()
+    });
+    if(!res.ok){ toast(res.msg, 'err'); return; }
+    closeModal();
+    toast(res.msg, res.achieved ? 'gold' : undefined);
+    render();
+  });
+}
+
+/* ============================================================
+   VIEWS
+   ============================================================ */
+function render(){
+  $$('.nav-item').forEach(el=> el.classList.toggle('active', el.dataset.view === currentView));
+  $$('.bn-item').forEach(el=> el.classList.toggle('active', el.dataset.view === currentView));
+  $('#pageTitle').textContent = TITLES[currentView];
+  chartRedraws = [];
+
+  const main = $('#main');
+  switch(currentView){
+    case 'dashboard': main.innerHTML = viewDashboard(); break;
+    case 'wishlist':  main.innerHTML = viewWishlist();  break;
+    case 'savings':   main.innerHTML = viewSavings();   break;
+    case 'planner':   main.innerHTML = viewPlanner();   break;
+    case 'reports':   main.innerHTML = viewReports();   break;
+    case 'settings':  main.innerHTML = viewSettings();  break;
+  }
+
+  requestAnimationFrame(()=>{
+    $$('.bar > span[data-w]').forEach(el=>{ el.style.width = el.dataset.w + '%'; });
+  });
+
+  chartRedraws.forEach(fn => { try{ fn(); }catch(e){ console.warn(e); } });
+  closeSidebar();
+}
+
+/* ---------------- Dashboard ---------------- */
+function viewDashboard(){
+  const o = overallStats();
+
+  if(!state.items.length){
+    return `
+      <div class="empty">
+        <div class="em">🌟</div>
+        <h3>Welcome to DreamGoals Pro</h3>
+        <p>You haven't added any wishes yet. Start by adding your first dream — a phone, a bike, a trip, a course — and set how much you can save each month. The dashboard will then calculate everything automatically.</p>
+        <button class="btn btn-gold" data-action="add-item">＋ Add Your First Wish</button>
+      </div>`;
+  }
+
+  const etaText = o.etaAll ? fmtDate(o.etaAll) : 'Set a monthly target';
+  const monthsText = isFinite(o.monthsAll) && o.monthsAll > 0
+    ? `${o.monthsAll.toFixed(1)} months remaining`
+    : (o.remaining <= 0 ? 'All goals funded 🎉' : 'No monthly saving set');
+
+  const cards = [
+    { label:'Wishlist Items', value:o.totalItems, sub:`${o.pending} pending • ${o.achieved} achieved`, cls:'' },
+    { label:'Total Budget Required', value:fmtMoney(o.totalBudget), sub:'Sum of all estimated prices', cls:'' },
+    { label:'Total Money Saved', value:fmtMoney(o.totalSaved), sub:'Across all goals', cls:'gold' },
+    { label:'Remaining Required', value:fmtMoney(o.remaining), sub:'Still to be saved', cls:'' },
+    { label:'Overall Completion', value:o.pct.toFixed(1)+'%', sub:'Of total budget', cls:'gold' },
+    { label:'Monthly Saving Target', value:fmtMoney(o.monthly), sub:'Your planned monthly savings', cls:'' },
+    { label:'Est. Date to Achieve All', value:etaText, sub:monthsText, cls:'gold' },
+    { label:'Achieved vs Pending', value:`${o.achieved} / ${o.pending}`, sub:'Completed vs pending goals', cls:'' }
+  ];
+
+  const statHTML = cards.map(c=>`
+    <div class="stat ${c.cls}">
+      <div class="s-label">${esc(c.label)}</div>
+      <div class="s-value">${esc(String(c.value))}</div>
+      <div class="s-sub">${esc(c.sub)}</div>
+    </div>`).join('');
+
+  const sorted = state.items.slice().sort((a,b)=>{
+    const pa = prioRank(a.priority), pb = prioRank(b.priority);
+    if(pa !== pb) return pa - pb;
+    const sa = itemStats(a), sb = itemStats(b);
+    if(sa.remaining <= 0 && sb.remaining > 0) return 1;
+    if(sb.remaining <= 0 && sa.remaining > 0) return -1;
+    return sb.pct - sa.pct;
+  }).slice(0,5);
+
+  const goalRows = sorted.map(it=>{
+    const s = itemStats(it);
+    const done = s.remaining <= 0;
+    const eta = done ? 'Funded 🎉' : (s.eta ? 'Est. '+fmtDate(s.eta) : 'Set monthly saving');
+    const track = s.onTrack === null ? '' :
+      (s.onTrack ? '<span class="tag green">On track</span>' : '<span class="tag red">Delayed</span>');
+    return `
+      <div class="goal-row">
+        <div class="top">
+          <div class="name">${catEmoji(it.category)} ${esc(it.name)}</div>
+          <div class="nowrap small muted">${esc(eta)} ${track}</div>
+        </div>
+        <div class="bar ${done?'gold':''}"><span data-w="${s.pct.toFixed(1)}"></span></div>
+        <div class="row-between small muted" style="margin-top:6px">
+          <span>${fmtMoney(s.saved)} of ${fmtMoney(s.price)}</span>
+          <span>${s.pct.toFixed(1)}%</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  const recent = state.txns.slice(0,6);
+  const recentHTML = recent.length ? recent.map(t=>{
+    const it = getItem(t.itemId);
+    return `
+      <div class="tx-row">
+        <div class="tx-ico ${t.type==='withdrawal'?'out':'in'}">${t.type==='withdrawal'?'➖':'➕'}</div>
+        <div class="tx-main">
+          <div class="t1">${esc(it ? it.name : 'Deleted item')}</div>
+          <div class="t2">${fmtDate(t.date)}${t.note ? ' • '+esc(t.note) : ''}</div>
+        </div>
+        <div class="tx-amt ${t.type==='withdrawal'?'neg':'pos'}">${t.type==='withdrawal'?'−':'+'}${fmtMoney(t.amount)}</div>
+      </div>`;
+  }).join('') : '<div class="muted small" style="padding:14px 0">No transactions recorded yet.</div>';
+
+  return `
+    <div class="stat-grid">${statHTML}</div>
+
+    <div class="grid-2 section-gap">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Top Goals Progress</h3><div class="sub">Priority-first overview</div></div>
+          <button class="btn btn-ghost btn-sm" data-view-link="wishlist">View all</button>
+        </div>
+        ${goalRows}
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Recent Savings Activity</h3><div class="sub">Latest transactions</div></div>
+          <button class="btn btn-ghost btn-sm" data-action="add-savings">＋ Save</button>
+        </div>
+        <div class="tx-list">${recentHTML}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Quick Actions</h3><div class="sub">Manage your dreams</div></div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn btn-gold" data-action="add-item">＋ Add Wishlist Item</button>
+        <button class="btn btn-primary" data-action="add-savings">💰 Record Saving</button>
+        <button class="btn btn-ghost" data-action="add-withdrawal">➖ Record Withdrawal</button>
+        <button class="btn btn-ghost" data-view-link="planner">🧠 Open Smart Planner</button>
+        <button class="btn btn-ghost" data-view-link="reports">📊 View Reports</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------------- Wishlist ---------------- */
+let wishFilters = { search:'', category:'all', priority:'all', status:'all', sort:'priority' };
+
+function viewWishlist(){
+  if(!state.items.length){
+    return `<div class="empty">
+      <div class="em">🎯</div>
+      <h3>Your wishlist is empty</h3>
+      <p>Add the things you're dreaming about. Give each one a price, a target date and a monthly saving amount — the app will handle all the maths.</p>
+      <button class="btn btn-gold" data-action="add-item">＋ Add Wishlist Item</button>
+    </div>`;
+  }
+
+  let list = state.items.slice();
+  const q = wishFilters.search.toLowerCase();
+  if(q) list = list.filter(i => i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q));
+  if(wishFilters.category !== 'all') list = list.filter(i => i.category === wishFilters.category);
+  if(wishFilters.priority !== 'all') list = list.filter(i => i.priority === wishFilters.priority);
+  if(wishFilters.status !== 'all') list = list.filter(i => i.status === wishFilters.status);
+
+  const sorters = {
+    priority: (a,b)=> prioRank(a.priority)-prioRank(b.priority) || itemStats(b).pct-itemStats(a).pct,
+    progress: (a,b)=> itemStats(b).pct - itemStats(a).pct,
+    priceHigh: (a,b)=> num(b.price)-num(a.price),
+    priceLow: (a,b)=> num(a.price)-num(b.price),
+    eta: (a,b)=>{
+      const ea = itemStats(a).eta, eb = itemStats(b).eta;
+      if(!ea && !eb) return 0;
+      if(!ea) return 1;
+      if(!eb) return -1;
+      return ea - eb;
+    },
+    newest: (a,b)=> new Date(b.createdAt) - new Date(a.createdAt)
+  };
+  list.sort(sorters[wishFilters.sort] || sorters.priority);
+
+  const catOpts = CATEGORIES.map(c=>`<option value="${c.name}" ${wishFilters.category===c.name?'selected':''}>${c.emoji} ${c.name}</option>`).join('');
+
+  const cards = list.map(it=>{
+    const s = itemStats(it);
+    const done = s.remaining <= 0 && s.price > 0;
+    const etaLabel = done ? 'Funded 🎉' : (s.eta ? 'Est. '+fmtDate(s.eta) : 'Set monthly saving');
+    const trackTag = s.onTrack === null ? '' :
+      (s.onTrack ? '<span class="tag green">On track</span>' : '<span class="tag red">Delayed</span>');
+
+    return `
+    <article class="wish-card">
+      <div class="wish-media">
+        ${it.image ? `<img src="${esc(it.image)}" alt="${esc(it.name)}" onerror="this.style.display='none'">` : `<div class="ph">${catEmoji(it.category)}</div>`}
+        <span class="chip chip-priority p-${it.priority}">${it.priority}</span>
+        <span class="chip ${statusClass(it.status)}">${it.status}</span>
+      </div>
+      <div class="wish-body">
+        <div>
+          <div class="wish-title">${esc(it.name)}</div>
+          <div class="muted small">${catEmoji(it.category)} ${esc(it.category)}${it.targetDate ? ' • Target '+fmtDate(it.targetDate) : ''}</div>
+        </div>
+
+        <div class="wish-amounts">
+          <div><span class="muted small">Target</span><strong>${fmtMoney(s.price)}</strong></div>
+          <div><span class="muted small">Saved</span><strong class="pos">${fmtMoney(s.saved)}</strong></div>
+          <div><span class="muted small">Remaining</span><strong>${fmtMoney(s.remaining)}</strong></div>
+        </div>
+
+        <div class="bar ${done?'gold':''}"><span data-w="${s.pct.toFixed(1)}"></span></div>
+        <div class="row-between small muted">
+          <span>${s.pct.toFixed(1)}% complete</span>
+          <span>${esc(etaLabel)}</span>
+        </div>
+        ${trackTag ? `<div>${trackTag}</div>` : ''}
+
+        <div class="wish-actions">
+          <button class="btn btn-primary btn-sm" data-action="add-savings" data-id="${it.id}">＋ Save</button>
+          <button class="btn btn-ghost btn-sm" data-action="edit-item" data-id="${it.id}">Edit</button>
+          <button class="btn btn-ghost btn-sm danger" data-action="del-item" data-id="${it.id}">Delete</button>
+          ${it.status !== 'Achieved' ? `<button class="btn btn-gold btn-sm" data-action="achieve" data-id="${it.id}">Mark Achieved</button>` : ''}
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+
+  return `
+    <div class="filter-bar">
+      <div class="field">
+        <label>Search</label>
+        <input type="text" id="wSearch" placeholder="Search wishlist…" value="${esc(wishFilters.search)}">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="wCat"><option value="all">All categories</option>${catOpts}</select>
+      </div>
+      <div class="field">
+        <label>Priority</label>
+        <select id="wPrio">
+          <option value="all">All priorities</option>
+          ${PRIORITIES.map(p=>`<option value="${p}" ${wishFilters.priority===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="wStatus">
+          <option value="all">All statuses</option>
+          ${STATUSES.map(s=>`<option value="${s}" ${wishFilters.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>Sort by</label>
+        <select id="wSort">
+          <option value="priority" ${wishFilters.sort==='priority'?'selected':''}>Priority</option>
+          <option value="progress" ${wishFilters.sort==='progress'?'selected':''}>Progress</option>
+          <option value="eta" ${wishFilters.sort==='eta'?'selected':''}>Soonest achievable</option>
+          <option value="priceHigh" ${wishFilters.sort==='priceHigh'?'selected':''}>Price (high → low)</option>
+          <option value="priceLow" ${wishFilters.sort==='priceLow'?'selected':''}>Price (low → high)</option>
+          <option value="newest" ${wishFilters.sort==='newest'?'selected':''}>Newest</option>
+        </select>
+      </div>
+      <button class="btn btn-gold" data-action="add-item">＋ Add Item</button>
+    </div>
+
+    ${list.length ? `<div class="wish-grid">${cards}</div>` :
+      `<div class="empty"><div class="em">🔍</div><h3>No items match your filters</h3><p>Try changing the search or filters.</p></div>`}
+  `;
+}
+
+/* ---------------- Savings ---------------- */
+let txFilterItem = 'all';
+let txFilterType = 'all';
+
+function viewSavings(){
+  if(!state.items.length){
+    return `<div class="empty">
+      <div class="em">💰</div>
+      <h3>No goals yet</h3>
+      <p>Add a wishlist item first, then you can record your daily, weekly or monthly savings against it.</p>
+      <button class="btn btn-gold" data-action="add-item">＋ Add Wishlist Item</button>
+    </div>`;
+  }
+
+  const totalSaved = sum(state.items.map(i=>savedFor(i.id)));
+  const depositTotal = sum(state.txns.filter(t=>t.type==='deposit').map(t=>num(t.amount)));
+  const withdrawTotal = sum(state.txns.filter(t=>t.type==='withdrawal').map(t=>num(t.amount)));
+
+  const balances = state.items.map(it=>{
+    const s = itemStats(it);
+    return `
+      <tr>
+        <td><strong>${catEmoji(it.category)} ${esc(it.name)}</strong></td>
+        <td>${fmtMoney(s.price)}</td>
+        <td class="pos">${fmtMoney(s.saved)}</td>
+        <td>${fmtMoney(s.remaining)}</td>
+        <td style="min-width:120px">
+          <div class="bar sm"><span data-w="${s.pct.toFixed(1)}"></span></div>
+          <div class="small muted" style="margin-top:3px">${s.pct.toFixed(1)}%</div>
+        </td>
+        <td><button class="btn btn-primary btn-sm" data-action="add-savings" data-id="${it.id}">＋ Save</button></td>
+      </tr>`;
+  }).join('');
+
+  let list = state.txns.slice();
+  if(txFilterItem !== 'all') list = list.filter(t=>t.itemId===txFilterItem);
+  if(txFilterType !== 'all') list = list.filter(t=>t.type===txFilterType);
+
+  const txHTML = list.length ? list.slice(0,200).map(t=>{
+    const it = getItem(t.itemId);
+    return `
+      <div class="tx-row">
+        <div class="tx-ico ${t.type==='withdrawal'?'out':'in'}">${t.type==='withdrawal'?'➖':'➕'}</div>
+        <div class="tx-main">
+          <div class="t1">${esc(it ? it.name : 'Deleted item')}</div>
+          <div class="t2">${fmtDate(t.date)}${t.note ? ' • '+esc(t.note) : ''} • ${t.type==='withdrawal'?'Withdrawal':'Deposit'}</div>
+        </div>
+        <div class="tx-amt ${t.type==='withdrawal'?'neg':'pos'}">${t.type==='withdrawal'?'−':'+'}${fmtMoney(t.amount)}</div>
+        <button class="icon-btn" style="width:32px;height:32px;font-size:13px" data-action="del-txn" data-id="${t.id}" title="Delete transaction">🗑</button>
+      </div>`;
+  }).join('') : '<div class="muted small" style="padding:16px 0">No transactions found for this filter.</div>';
+
+  const itemOpts = state.items.map(i=>`<option value="${i.id}" ${txFilterItem===i.id?'selected':''}>${esc(i.name)}</option>`).join('');
+
+  return `
+    <div class="stat-grid">
+      <div class="stat gold"><div class="s-label">Total Saved Balance</div><div class="s-value">${fmtMoney(totalSaved)}</div><div class="s-sub">Net across all goals</div></div>
+      <div class="stat"><div class="s-label">Total Deposits</div><div class="s-value pos">${fmtMoney(depositTotal)}</div><div class="s-sub">All money added</div></div>
+      <div class="stat"><div class="s-label">Total Withdrawals</div><div class="s-value neg">${fmtMoney(withdrawTotal)}</div><div class="s-sub">Spent against goals</div></div>
+      <div class="stat"><div class="s-label">Transactions</div><div class="s-value">${state.txns.length}</div><div class="s-sub">Recorded entries</div></div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-head">
+        <div><h3>Record a Transaction</h3><div class="sub">Every entry updates the correct goal balance — nothing is counted twice</div></div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn btn-primary" data-action="add-savings">＋ Add Savings / Bonus</button>
+        <button class="btn btn-ghost" data-action="add-withdrawal">➖ Record Withdrawal / Expense</button>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-head"><div><h3>Savings by Goal</h3><div class="sub">Live balances per wishlist item</div></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Goal</th><th>Target</th><th>Saved</th><th>Remaining</th><th>Progress</th><th></th></tr></thead>
+          <tbody>${balances}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Transaction History</h3><div class="sub">${list.length} record(s)</div></div>
+      </div>
+      <div class="filter-bar" style="margin-bottom:10px">
+        <div class="field">
+          <label>Filter by goal</label>
+          <select id="txItem"><option value="all">All goals</option>${itemOpts}</select>
+        </div>
+        <div class="field">
+          <label>Filter by type</label>
+          <select id="txType">
+            <option value="all" ${txFilterType==='all'?'selected':''}>All types</option>
+            <option value="deposit" ${txFilterType==='deposit'?'selected':''}>Deposits only</option>
+            <option value="withdrawal" ${txFilterType==='withdrawal'?'selected':''}>Withdrawals only</option>
+          </select>
+        </div>
+      </div>
+      <div class="tx-list">${txHTML}</div>
+    </div>
+  `;
+}
+
+/* ---------------- Planner ---------------- */
+function buildPlan(budget){
+  const active = state.items
+    .map(it => ({ it, s: itemStats(it) }))
+    .filter(x => x.s.remaining > 0.5 && x.it.status !== 'Achieved');
+
+  const ranked = active.slice().sort((a,b)=>{
+    const pa = prioRank(a.it.priority), pb = prioRank(b.it.priority);
+    if(pa !== pb) return pa - pb;
+    const ta = a.s.target ? a.s.target.getTime() : Infinity;
+    const tb = b.s.target ? b.s.target.getTime() : Infinity;
+    if(ta !== tb) return ta - tb;
+    return b.s.pct - a.s.pct;
+  });
+
+  ranked.forEach(x=>{
+    let desired;
+    if(x.it.monthlySaving > 0) desired = num(x.it.monthlySaving);
+    else if(x.s.target && x.s.daysToTarget > 0) desired = x.s.remaining / (x.s.daysToTarget/30.4375);
+    else desired = x.s.remaining / 12;
+    x.desired = Math.min(desired, x.s.remaining);
+  });
+
+  const totalDesired = sum(ranked.map(x=>x.desired));
+  let remainingBudget = budget;
+  ranked.forEach(x=>{
+    const alloc = Math.min(x.desired, remainingBudget);
+    x.alloc = Math.max(0, alloc);
+    remainingBudget -= x.alloc;
+    x.months = x.alloc > 0 ? x.s.remaining / x.alloc : Infinity;
+    x.eta = isFinite(x.months) ? addDays(new Date(), x.months*30.4375) : null;
+  });
+
+  const unallocated = Math.max(0, remainingBudget);
+  return { ranked, totalDesired, unallocated, budget };
+}
+
+function plannerResultsHTML(budget){
+  const plan = buildPlan(budget);
+  if(!plan.ranked.length){
+    return `<div class="empty" style="padding:30px"><div class="em">🎉</div><h3>All goals are funded</h3><p>Every wishlist item has reached its target. Add a new dream to plan for!</p></div>`;
+  }
+
+  const totalRemaining = sum(plan.ranked.map(x=>x.s.remaining));
+  const shortfall = Math.max(0, plan.totalDesired - budget);
+  const monthsAll = budget > 0 ? totalRemaining / budget : Infinity;
+  const etaAll = isFinite(monthsAll) ? addDays(new Date(), monthsAll*30.4375) : null;
+
+  let msg = '';
+  if(budget <= 0){
+    msg = `<div class="tag red">Set a monthly saving amount to see your plan.</div>`;
+  } else if(shortfall > 0.5){
+    msg = `<div class="tag red">⚠️ Your monthly budget is short by <strong>${fmtMoney(shortfall)}</strong> per month to meet every target date.</div>
+           <div class="small muted" style="margin-top:8px">Realistic revised timeline for all goals at ${fmtMoney(budget)}/month: <strong>${isFinite(monthsAll)? monthsAll.toFixed(1)+' months (by '+fmtDate(etaAll)+')' : '—'}</strong>.
+           Consider increasing your monthly saving, pushing some target dates further out, or reducing the priority of lower-value goals.</div>`;
+  } else {
+    msg = `<div class="tag green">✔ Your monthly budget covers all planned goals.</div>
+           ${plan.unallocated > 0.5 ? `<div class="small muted" style="margin-top:8px">You still have <strong>${fmtMoney(plan.unallocated)}</strong> unallocated each month — save it for a new dream or finish goals faster.</div>` : ''}`;
+  }
+
+  const firstAffordable = plan.ranked.filter(x=>x.eta).sort((a,b)=> a.eta - b.eta)[0];
+
+  const rows = plan.ranked.map(x=>{
+    const onTrack = (x.eta && x.s.target) ? x.eta <= x.s.target : null;
+    const tag = x.s.remaining <= 0 ? '<span class="tag green">Funded</span>' :
+                x.alloc <= 0 ? '<span class="tag red">Not funded</span>' :
+                onTrack === true ? '<span class="tag green">On track</span>' :
+                onTrack === false ? '<span class="tag red">Delayed</span>' :
+                '<span class="tag gold">In plan</span>';
+    return `
+      <tr>
+        <td><strong>${catEmoji(x.it.category)} ${esc(x.it.name)}</strong><div class="small muted">${x.it.priority} priority</div></td>
+        <td>${fmtMoney(x.s.remaining)}</td>
+        <td><strong>${fmtMoney(x.alloc)}</strong><div class="small muted">needs ${fmtMoney(x.desired)}</div></td>
+        <td>${isFinite(x.months) ? x.months.toFixed(1)+' mo' : '—'}</td>
+        <td>${x.eta ? fmtDate(x.eta) : '—'}</td>
+        <td>${x.s.target ? fmtDate(x.s.target) : '—'}</td>
+        <td>${tag}</td>
+      </tr>`;
+  }).join('');
+
+  return `
+    <div class="stat-grid" style="margin-bottom:16px">
+      <div class="stat gold"><div class="s-label">Monthly Budget</div><div class="s-value">${fmtMoney(budget)}</div><div class="s-sub">Total available per month</div></div>
+      <div class="stat"><div class="s-label">Required for All Targets</div><div class="s-value">${fmtMoney(plan.totalDesired)}</div><div class="s-sub">To meet every target date</div></div>
+      <div class="stat"><div class="s-label">Total Remaining</div><div class="s-value">${fmtMoney(totalRemaining)}</div><div class="s-sub">Across ${plan.ranked.length} active goal(s)</div></div>
+      <div class="stat gold"><div class="s-label">Est. Completion (All)</div><div class="s-value">${etaAll ? fmtDate(etaAll) : '—'}</div><div class="s-sub">${isFinite(monthsAll) && monthsAll>0 ? monthsAll.toFixed(1)+' months' : '—'}</div></div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-head"><div><h3>Recommendation</h3></div></div>
+      ${msg}
+      ${firstAffordable ? `<div class="small" style="margin-top:12px">💡 You can afford <strong>${esc(firstAffordable.it.name)}</strong> first — estimated <strong>${fmtDate(firstAffordable.eta)}</strong>.</div>` : ''}
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><h3>Suggested Monthly Allocation</h3><div class="sub">Priority-first funding — high priority goals are funded first</div></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Goal</th><th>Remaining</th><th>Allocate / month</th><th>Time</th><th>Est. Achieve</th><th>Target</th><th>Status</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function viewPlanner(){
+  if(!state.items.length){
+    return `<div class="empty">
+      <div class="em">🧠</div>
+      <h3>Nothing to plan yet</h3>
+      <p>Add wishlist items and the Smart Planner will tell you which goal you can afford first, how to split your monthly savings, and whether your target dates are realistic.</p>
+      <button class="btn btn-gold" data-action="add-item">＋ Add Wishlist Item</button>
+    </div>`;
+  }
+  if(plannerBudget === null){
+    plannerBudget = num(state.settings.monthlyBudget) || monthlyTarget() || 10000;
+  }
+  const maxBudget = Math.max(200000, Math.ceil((sum(state.items.map(i=>num(i.price)))/12) * 3 / 1000) * 1000);
+
+  return `
+    <div class="card section-gap">
+      <div class="card-head">
+        <div><h3>Your Monthly Saving Capacity</h3><div class="sub">Drag the slider to see how your timeline changes</div></div>
+      </div>
+      <div class="field">
+        <label>Monthly amount you can save: <strong id="budgetLabel">${fmtMoney(plannerBudget)}</strong></label>
+        <input type="range" id="budgetSlider" min="0" max="${maxBudget}" step="500" value="${plannerBudget}" style="padding:0; background:transparent; border:0; accent-color:var(--g600)">
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center">
+        <div class="field" style="max-width:220px; flex:1 1 180px">
+          <label>Or type an exact amount</label>
+          <input type="number" id="budgetInput" min="0" step="500" value="${plannerBudget}">
+        </div>
+        <button class="btn btn-ghost btn-sm" data-action="save-budget">💾 Save as default budget</button>
+      </div>
+    </div>
+    <div id="plannerResults">${plannerResultsHTML(plannerBudget)}</div>
+  `;
+}
+
+/* ---------------- Reports ---------------- */
+function rangeBounds(){
+  const now = new Date(); now.setHours(23,59,59,999);
+  const from = new Date(); from.setHours(0,0,0,0);
+  switch(reportRange.type){
+    case '7d':   from.setDate(from.getDate()-6); break;
+    case '30d':  from.setDate(from.getDate()-29); break;
+    case '90d':  from.setDate(from.getDate()-89); break;
+    case '180d': from.setDate(from.getDate()-179); break;
+    case '365d': from.setDate(from.getDate()-364); break;
+    case 'all': {
+      const all = state.txns.map(t=> new Date(t.date+'T00:00:00').getTime());
+      if(all.length) from.setTime(Math.min(...all)); else from.setDate(from.getDate()-29);
+      break;
+    }
+    case 'custom': {
+      const f = reportRange.from ? new Date(reportRange.from+'T00:00:00') : addDays(now,-29);
+      const t = reportRange.to ? new Date(reportRange.to+'T23:59:59') : now;
+      return { from: f, to: t };
+    }
+  }
+  return { from, to: now };
+}
+
+function buildReportSeries(){
+  const { from, to } = rangeBounds();
+  const days = Math.max(1, Math.round((to - from)/DAY));
+  const mode = days <= 32 ? 'day' : days <= 200 ? 'week' : 'month';
+
+  const buckets = [];
+  if(mode === 'day'){
+    for(let d = new Date(from); d <= to; d = addDays(d,1)){
+      buckets.push({ start:new Date(d), end:addDays(d,1), label: fmtDay(d) });
+    }
+  } else if(mode === 'week'){
+    for(let d = new Date(from); d < to; d = addDays(d,7)){
+      buckets.push({ start:new Date(d), end:addDays(d,7), label: fmtDay(d) });
+    }
+  } else {
+    let d = new Date(from.getFullYear(), from.getMonth(), 1);
+    while(d <= to){
+      const e = new Date(d.getFullYear(), d.getMonth()+1, 1);
+      buckets.push({ start:new Date(d), end:e, label: d.toLocaleDateString('en-GB',{month:'short', year:'2-digit'}) });
+      d = e;
+    }
+  }
+
+  const fromT = from.getTime();
+  let balanceBefore = 0;
+  state.txns.forEach(t=>{
+    const ts = new Date(t.date+'T00:00:00').getTime();
+    if(ts < fromT) balanceBefore += (t.type==='withdrawal'?-1:1)*num(t.amount);
+  });
+
+  let running = balanceBefore;
+  const netSeries = [];
+  const depositSeries = [];
+  buckets.forEach(b=>{
+    let net = 0, dep = 0;
+    state.txns.forEach(t=>{
+      const ts = new Date(t.date+'T00:00:00').getTime();
+      if(ts >= b.start.getTime() && ts < b.end.getTime()){
+        const v = num(t.amount);
+        net += (t.type==='withdrawal' ? -v : v);
+        if(t.type === 'deposit') dep += v;
+      }
+    });
+    running += net;
+    netSeries.push({ l: b.label, v: Math.max(0, running) });
+    depositSeries.push({ l: b.label, v: dep });
+  });
+
+  return { netSeries, depositSeries, mode };
+}
+
+function viewReports(){
+  const { netSeries, depositSeries } = buildReportSeries();
+
+  const dist = state.items
+    .map(it => ({ label: it.name, v: savedFor(it.id), emoji: catEmoji(it.category) }))
+    .filter(x => x.v > 0)
+    .sort((a,b)=> b.v - a.v);
+
+  const bvs = state.items.slice().sort((a,b)=> num(b.price)-num(a.price)).slice(0,6);
+
+  const achieved = state.items.filter(i=>i.status==='Achieved').length;
+  const pending = state.items.length - achieved;
+
+  const distLegend = dist.length ? dist.map((d,i)=>`
+    <div class="li"><span class="dot" style="background:${PALETTE[i%PALETTE.length]}"></span>${d.emoji} ${esc(d.label)} — <strong>${fmtMoney(d.v)}</strong></div>
+  `).join('') : '<div class="li">No savings recorded yet.</div>';
+
+  const rangeOpts = [
+    ['7d','Last 7 days'],['30d','Last 30 days'],['90d','Last 90 days'],
+    ['180d','Last 6 months'],['365d','Last 12 months'],['all','All time'],['custom','Custom range']
+  ].map(([v,l])=>`<option value="${v}" ${reportRange.type===v?'selected':''}>${l}</option>`).join('');
+
+  const html = `
+    <div class="filter-bar">
+      <div class="field" style="max-width:220px">
+        <label>Date range</label>
+        <select id="rRange">${rangeOpts}</select>
+      </div>
+      <div class="field ${reportRange.type==='custom'?'':'hidden'}" id="customFromWrap" style="max-width:170px">
+        <label>From</label>
+        <input type="date" id="rFrom" value="${reportRange.from || ''}">
+      </div>
+      <div class="field ${reportRange.type==='custom'?'':'hidden'}" id="customToWrap" style="max-width:170px">
+        <label>To</label>
+        <input type="date" id="rTo" value="${reportRange.to || ''}">
+      </div>
+    </div>
+
+    <div class="grid-2 section-gap">
+      <div class="card">
+        <div class="card-head"><div><h3>Savings Over Time</h3><div class="sub">Cumulative saved balance</div></div></div>
+        <div class="chart-box"><canvas id="cLine"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h3>Goal-wise Savings Distribution</h3><div class="sub">Where your money is allocated</div></div></div>
+        <div class="chart-box"><canvas id="cDoughnut"></canvas></div>
+        <div class="legend">${distLegend}</div>
+      </div>
+    </div>
+
+    <div class="grid-2 section-gap">
+      <div class="card">
+        <div class="card-head"><div><h3>Saving Performance</h3><div class="sub">Deposits per period in the selected range</div></div></div>
+        <div class="chart-box"><canvas id="cBars"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h3>Budget Required vs Amount Saved</h3><div class="sub">Top goals by price</div></div></div>
+        <div class="chart-box"><canvas id="cBvs"></canvas></div>
+        <div class="legend">
+          <div class="li"><span class="dot" style="background:#0f523c"></span>Target budget</div>
+          <div class="li"><span class="dot" style="background:#c9a227"></span>Amount saved</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><h3>Completed vs Pending Goals</h3><div class="sub">Goal status breakdown</div></div></div>
+      <div class="grid-2" style="align-items:center">
+        <div class="chart-box" style="height:200px"><canvas id="cStatus"></canvas></div>
+        <div>
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div class="row-between">
+              <span class="tag green">✔ Achieved</span>
+              <strong style="font-size:18px">${achieved}</strong>
+            </div>
+            <div class="row-between">
+              <span class="tag gold">⏳ Pending</span>
+              <strong style="font-size:18px">${pending}</strong>
+            </div>
+            <div class="bar lg" style="margin-top:6px">
+              <span data-w="${state.items.length ? (achieved/state.items.length*100).toFixed(1) : 0}"></span>
+            </div>
+            <div class="small muted">${state.items.length ? ((achieved/state.items.length)*100).toFixed(1)+'% of all goals completed' : 'No goals yet'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // register chart draws
+  chartRedraws.push(()=>{
+    const line = $('#cLine');
+    if(line) chartLine(line, netSeries, cssVar('--g600'));
+  });
+  chartRedraws.push(()=>{
+    const dn = $('#cDoughnut');
+    if(!dn) return;
+    const slices = dist.map((d,i)=>({ v:d.v, color:PALETTE[i%PALETTE.length] }));
+    chartDoughnut(dn, slices, 'total saved');
+  });
+  chartRedraws.push(()=>{
+    const bars = $('#cBars');
+    if(!bars) return;
+    const groups = depositSeries.map(p=>({ label:p.l, values:[{ v:p.v, color:'#177a52' }] }));
+    chartBars(bars, groups, { maxBar:26 });
+  });
+  chartRedraws.push(()=>{
+    const bv = $('#cBvs');
+    if(!bv) return;
+    const groups = bvs.map(it=>({
+      label: it.name.length > 10 ? it.name.slice(0,9)+'…' : it.name,
+      values: [
+        { v: num(it.price), color:'#0f523c' },
+        { v: savedFor(it.id), color:'#c9a227' }
+      ]
+    }));
+    chartBars(bv, groups, { maxBar:24 });
+  });
+  chartRedraws.push(()=>{
+    const st = $('#cStatus');
+    if(!st) return;
+    chartDoughnut(st, [
+      { v: achieved, color:'#177a52' },
+      { v: pending,  color:'#c9a227' }
+    ], 'goals');
+  });
+
+  return html;
+}
+
+/* ---------------- Settings ---------------- */
+function viewSettings(){
+  const used = (localStorage.getItem(K.items)||'').length + (localStorage.getItem(K.txns)||'').length + (localStorage.getItem(K.settings)||'').length;
+  const kb = (used/1024).toFixed(1);
+  const isDark = document.documentElement.dataset.theme === 'dark';
+
+  return `
+    <div class="grid-2 section-gap">
+      <div class="card">
+        <div class="card-head"><div><h3>Preferences</h3><div class="sub">Appearance &amp; defaults</div></div></div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Theme</label>
+          <div style="display:flex; gap:8px">
+            <button class="btn ${!isDark?'btn-primary':'btn-ghost'}" data-action="set-theme" data-theme="light">☀️ Light</button>
+            <button class="btn ${isDark?'btn-primary':'btn-ghost'}" data-action="set-theme" data-theme="dark">🌙 Dark</button>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Default monthly saving budget (PKR)</label>
+          <input type="number" id="s_budget" min="0" step="500" value="${num(state.settings.monthlyBudget)}">
+          <span class="hint">Used as the starting budget in the Smart Planner. Goals with their own monthly saving override this when totalled.</span>
+        </div>
+        <button class="btn btn-primary" data-action="save-settings">Save Preferences</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h3>Data Summary</h3><div class="sub">What is stored in this browser</div></div></div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div class="row-between"><span class="muted">Wishlist items</span><strong>${state.items.length}</strong></div>
+          <div class="row-between"><span class="muted">Transactions</span><strong>${state.txns.length}</strong></div>
+          <div class="row-between"><span class="muted">Approx. storage used</span><strong>${kb} KB</strong></div>
+          <div class="row-between"><span class="muted">Goal statuses</span><strong>${state.items.filter(i=>i.status==='Achieved').length} achieved</strong></div>
+        </div>
+        <div class="hint" style="margin-top:14px">
+          <strong>Limitations of local storage:</strong> your data lives only in this browser and this device. It is lost if you clear browsing data, use private/incognito mode, or switch browsers or devices. Export a backup regularly.
+        </div>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-head"><div><h3>Export &amp; Backup</h3><div class="sub">Save a copy of your data</div></div></div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn btn-primary" data-action="export-wishlist-csv">⬇️ Export Wishlist (CSV)</button>
+        <button class="btn btn-primary" data-action="export-txns-csv">⬇️ Export Savings History (CSV)</button>
+        <button class="btn btn-gold" data-action="backup-json">💾 Full Backup (JSON)</button>
+        <button class="btn btn-ghost" data-action="restore-json">📂 Restore from Backup</button>
+      </div>
+      <input type="file" id="restoreInput" accept="application/json" class="hidden">
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><h3>Danger Zone</h3><div class="sub">Irreversible actions</div></div></div>
+      <p class="small muted" style="margin:0 0 12px">Deleting everything removes all wishlist items, transactions and settings from this browser. Make a backup first.</p>
+      <button class="btn btn-ghost danger" data-action="clear-all">🗑️ Delete All Data</button>
+    </div>
+  `;
+}
+
+/* ============================================================
+   SIDEBAR / THEME
+   ============================================================ */
+function openSidebar(){ $('#sidebar').classList.add('open'); $('#scrim').classList.add('show'); }
+function closeSidebar(){ $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show'); }
+
+function applyTheme(){
+  document.documentElement.dataset.theme = state.settings.theme === 'dark' ? 'dark' : 'light';
+  const btn = $('#themeToggle');
+  if(btn) btn.textContent = state.settings.theme === 'dark' ? '☀️' : '🌙';
+}
+
+/* ============================================================
+   EXPORT / IMPORT
+   ============================================================ */
+function downloadBlob(filename, mime, content){
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+}
+function csvEscape(v){
+  const s = String(v==null?'':v);
+  if(/[",\n\r]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+  return s;
+}
+function exportWishlistCSV(){
+  if(!state.items.length){ toast('Nothing to export yet.','err'); return; }
+  const head = ['Name','Category','Priority','Status','Estimated Price (PKR)','Saved (PKR)','Remaining (PKR)','Progress %','Target Date','Est. Achievement','Monthly Saving (PKR)','Notes','Created'];
+  const rows = state.items.map(it=>{
+    const s = itemStats(it);
+    return [
+      it.name, it.category, it.priority, it.status,
+      Math.round(s.price), Math.round(s.saved), Math.round(s.remaining), s.pct.toFixed(1),
+      it.targetDate || '', s.eta ? s.eta.toISOString().slice(0,10) : '',
+      Math.round(num(it.monthlySaving)), it.notes || '', it.createdAt || ''
+    ];
+  });
+  const csv = '\uFEFF' + [head, ...rows].map(r=> r.map(csvEscape).join(',')).join('\r\n');
+  downloadBlob('my-dream-wishlist-' + todayISO() + '.csv', 'text/csv;charset=utf-8', csv);
+  toast('Wishlist exported as CSV.');
+}
+function exportTxnsCSV(){
+  if(!state.txns.length){ toast('No transactions to export yet.','err'); return; }
+  const head = ['Date','Wishlist Item','Type','Amount (PKR)','Note','Recorded At'];
+  const rows = state.txns.slice().sort((a,b)=> a.date<b.date?1:a.date>b.date?-1:0).map(t=>{
+    const it = getItem(t.itemId);
+    return [ t.date, it ? it.name : '(deleted)', t.type === 'withdrawal' ? 'Withdrawal' : 'Deposit', Math.round(num(t.amount)), t.note || '', t.createdAt || '' ];
+  });
+  const csv = '\uFEFF' + [head, ...rows].map(r=> r.map(csvEscape).join(',')).join('\r\n');
+  downloadBlob('my-dream-savings-' + todayISO() + '.csv', 'text/csv;charset=utf-8', csv);
+  toast('Savings history exported as CSV.');
+}
+function backupJSON(){
+  const payload = {
+    app: 'DreamGoals Pro',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    items: state.items,
+    txns: state.txns,
+    settings: state.settings
+  };
+  downloadBlob('dreamgoals-pro-backup-' + todayISO() + '.json', 'application/json', JSON.stringify(payload, null, 2));
+  toast('Backup file downloaded.');
+}
+function restoreJSON(file){
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(!data || typeof data !== 'object') throw new Error('Invalid file');
+      const items = Array.isArray(data.items) ? data.items : null;
+      const txns = Array.isArray(data.txns) ? data.txns : [];
+      if(!items) throw new Error('No items found in backup file');
+
+      const ok = confirm(
+        'Restore backup?\n\n' +
+        'This will replace all current data with:\n' +
+        '• ' + items.length + ' wishlist items\n' +
+        '• ' + txns.length + ' transactions\n\n' +
+        'Your current data will be lost.'
+      );
+      if(!ok) return;
+
+      localStorage.setItem(K.items, JSON.stringify(items));
+      localStorage.setItem(K.txns, JSON.stringify(txns));
+      if(data.settings) localStorage.setItem(K.settings, JSON.stringify(data.settings));
+      load();
+      applyTheme();
+      render();
+      toast('Backup restored successfully.');
+    }catch(err){
+      toast('Could not restore: ' + err.message, 'err');
+    }
+  };
+  reader.readAsText(file);
+}
+function clearAll(){
+  const ok = confirm(
+    'Delete ALL data?\n\n' +
+    'This removes every wishlist item, transaction and setting from this browser. This cannot be undone.\n\n' +
+    'Consider downloading a backup first.'
+  );
+  if(!ok) return;
+  const ok2 = confirm('Are you absolutely sure? Click OK to permanently delete everything.');
+  if(!ok2) return;
+  localStorage.removeItem(K.items);
+  localStorage.removeItem(K.txns);
+  localStorage.removeItem(K.settings);
+  state.items = [];
+  state.txns = [];
+  state.settings = { theme:'light', monthlyBudget:0, userName:'' };
+  plannerBudget = null;
+  applyTheme();
+  currentView = 'dashboard';
+  render();
+  toast('All data deleted.');
+}
+
+/* ============================================================
+   GLOBAL EVENT HANDLERS
+   ============================================================ */
+document.addEventListener('click', e=>{
+  // modal backdrop click
+  if(e.target.matches('.modal-backdrop')){
+    closeModal();
+    return;
+  }
+
+  // view switching
+  const viewBtn = e.target.closest('[data-view]');
+  if(viewBtn && (viewBtn.classList.contains('nav-item') || viewBtn.classList.contains('bn-item'))){
+    currentView = viewBtn.dataset.view;
+    render();
+    return;
+  }
+  const viewLink = e.target.closest('[data-view-link]');
+  if(viewLink){
+    currentView = viewLink.dataset.viewLink;
+    render();
+    return;
+  }
+
+  // actions
+  const actionEl = e.target.closest('[data-action]');
+  if(!actionEl) return;
+  const action = actionEl.dataset.action;
+  const id = actionEl.dataset.id;
+
+  switch(action){
+    case 'add-item':
+      openItemModal(null);
+      break;
+    case 'edit-item':
+      if(id) openItemModal(id);
+      break;
+    case 'close-modal':
+      closeModal();
+      break;
+    case 'add-savings':
+      openSavingsModal(id || null, 'deposit');
+      break;
+    case 'add-withdrawal':
+      openSavingsModal(id || null, 'withdrawal');
+      break;
+    case 'del-item': {
+      const it = getItem(id);
+      if(!it) break;
+      const txCount = state.txns.filter(t=>t.itemId===id).length;
+      const ok = confirm(
+        'Delete "' + it.name + '"?\n\n' +
+        'This will also remove ' + txCount + ' transaction(s) linked to it.\n' +
+        'This cannot be undone.'
+      );
+      if(!ok) break;
+      state.items = state.items.filter(i=>i.id !== id);
+      state.txns = state.txns.filter(t=>t.itemId !== id);
+      saveItems(); saveTxns();
+      toast('Wishlist item deleted.');
+      render();
+      break;
+    }
+    case 'del-txn': {
+      const t = state.txns.find(x=>x.id===id);
+      if(!t) break;
+      const ok = confirm('Delete this transaction?\n\nThe balance of the goal will be adjusted accordingly.');
+      if(!ok) break;
+      state.txns = state.txns.filter(x=>x.id !== id);
+      saveTxns();
+      const it = getItem(t.itemId);
+      if(it){ recomputeStatus(it); saveItems(); }
+      toast('Transaction deleted.');
+      render();
+      break;
+    }
+    case 'achieve': {
+      const it = getItem(id);
+      if(!it) break;
+      const s = itemStats(it);
+      if(s.remaining > 0.5){
+        const ok = confirm(
+          'Mark "' + it.name + '" as Achieved?\n\n' +
+          'There is still ' + fmtMoney(s.remaining) + ' left to save. You can still record more savings later.'
+        );
+        if(!ok) break;
+      }
+      it.status = 'Achieved';
+      saveItems();
+      toast('🏆 Marked as achieved — congratulations!', 'gold');
+      render();
+      break;
+    }
+    case 'set-theme':
+      state.settings.theme = actionEl.dataset.theme === 'dark' ? 'dark' : 'light';
+      saveSettings();
+      applyTheme();
+      render();
+      break;
+    case 'save-settings': {
+      const budgetEl = $('#s_budget');
+      if(budgetEl) state.settings.monthlyBudget = num(budgetEl.value);
+      saveSettings();
+      toast('Preferences saved.');
+      break;
+    }
+    case 'save-budget': {
+      state.settings.monthlyBudget = num(plannerBudget);
+      saveSettings();
+      toast('Default monthly budget saved.');
+      break;
+    }
+    case 'export-wishlist-csv':
+      exportWishlistCSV();
+      break;
+    case 'export-txns-csv':
+      exportTxnsCSV();
+      break;
+    case 'backup-json':
+      backupJSON();
+      break;
+    case 'restore-json':
+      $('#restoreInput').click();
+      break;
+    case 'clear-all':
+      clearAll();
+      break;
+  }
+});
+
+/* Input / change events (delegated) */
+document.addEventListener('input', e=>{
+  const t = e.target;
+
+  if(t.id === 'wSearch'){
+    wishFilters.search = t.value;
+    const pos = t.selectionStart;
+    render();
+    const el = $('#wSearch');
+    if(el){ el.focus(); try{ el.setSelectionRange(pos, pos); }catch(_){} }
+    return;
+  }
+
+  if(t.id === 'budgetSlider' || t.id === 'budgetInput'){
+    const v = num(t.value);
+    plannerBudget = v;
+    const lbl = $('#budgetLabel');
+    if(lbl) lbl.textContent = fmtMoney(v);
+    const slider = $('#budgetSlider');
+    const input = $('#budgetInput');
+    if(t.id === 'budgetSlider' && input) input.value = v;
+    if(t.id === 'budgetInput' && slider) slider.value = Math.min(v, num(slider.max));
+    const results = $('#plannerResults');
+    if(results) results.innerHTML = plannerResultsHTML(v);
+    requestAnimationFrame(()=>{
+      $$('#plannerResults .bar > span[data-w]').forEach(el=>{ el.style.width = el.dataset.w + '%'; });
+    });
+    return;
+  }
+
+  if(t.id === 'rFrom'){ reportRange.from = t.value; render(); return; }
+  if(t.id === 'rTo'){ reportRange.to = t.value; render(); return; }
+});
+
+document.addEventListener('change', e=>{
+  const t = e.target;
+
+  if(t.id === 'wCat'){ wishFilters.category = t.value; render(); return; }
+  if(t.id === 'wPrio'){ wishFilters.priority = t.value; render(); return; }
+  if(t.id === 'wStatus'){ wishFilters.status = t.value; render(); return; }
+  if(t.id === 'wSort'){ wishFilters.sort = t.value; render(); return; }
+
+  if(t.id === 'txItem'){ txFilterItem = t.value; render(); return; }
+  if(t.id === 'txType'){ txFilterType = t.value; render(); return; }
+
+  if(t.id === 'rRange'){
+    reportRange.type = t.value;
+    if(t.value === 'custom'){
+      if(!reportRange.from){
+        const d = new Date(); d.setDate(d.getDate()-29);
+        reportRange.from = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+      }
+      if(!reportRange.to) reportRange.to = todayISO();
+    }
+    render();
+    return;
+  }
+
+  if(t.id === 'restoreInput'){
+    const file = t.files && t.files[0];
+    if(file) restoreJSON(file);
+    t.value = '';
+    return;
+  }
+});
+
+/* Close modal on Escape */
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape') closeModal();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init(){
+  load();
+  applyTheme();
+
+  // Sidebar (mobile)
+  const menuBtn = $('#menuBtn');
+  if(menuBtn) menuBtn.addEventListener('click', ()=> {
+    const isOpen = $('#sidebar').classList.contains('open');
+    isOpen ? closeSidebar() : openSidebar();
+  });
+  $('#scrim').addEventListener('click', closeSidebar);
+
+  // Theme toggle
+  $('#themeToggle').addEventListener('click', ()=>{
+    state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
+    saveSettings();
+    applyTheme();
+    render();
+  });
+
+  // Redraw charts on resize
+  let rT;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(rT);
+    rT = setTimeout(()=>{
+      chartRedraws.forEach(fn => { try{ fn(); }catch(e){} });
+    }, 160);
+  });
+
+  // Initial render
+  render();
+
+  // First-run hint
+  if(!state.items.length && !localStorage.getItem('mdw_seen')){
+    localStorage.setItem('mdw_seen','1');
+    setTimeout(()=> toast('Welcome to DreamGoals Pro! Add your first dream goal.'), 600);
+  }
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+})();
+</script>
+</body>
+</html>
