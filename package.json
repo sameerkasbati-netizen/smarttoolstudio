@@ -1,0 +1,8 @@
+{
+  "name": "smarttools-studio",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@sfpy/node-core": "0.3.5"
+  }
+}
